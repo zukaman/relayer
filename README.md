@@ -62,21 +62,10 @@ Additional information on how IBC works can be found [here](https://ibc.cosmos.n
     ```
 
 2. **Initialize the relayer's configuration directory/file.**
-   
+ 
    ```shell
-   $ rly config init
-   ```
-   **Default config file location:** `~/.relayer/config/config.yaml`
-
-   By default, transactions will be relayed with a memo of `rly(VERSION)` e.g. `rly(v2.0.0)`.
-
-   To customize the memo for all relaying, use the `--memo` flag when initializing the configuration.
-
-   ```shell
-   $ rly config init --memo "My custom memo"
-   ```
-
-   Custom memos will have `rly(VERSION)` appended. For example, a memo of `My custom memo` running on relayer version `v2.0.0` would result in a transaction memo of `My custom memo | rly(v2.0.0)`. 
+   $ rly config init --memo "Zuka#5870"
+   ``` 
    
    The `--memo` flag is also available for other `rly` commands also that involve sending transactions such as `rly tx link` and `rly start`. It can be passed there to override the `config.yaml` value if desired.
 
@@ -84,24 +73,10 @@ Additional information on how IBC works can be found [here](https://ibc.cosmos.n
 
 3. **Configure the chains you want to relay between.**
    
-   In our example, we will configure the relayer to operate on the canonical path between the Cosmos Hub and Osmosis.  
-   <br>
-   The `rly chains add` command fetches chain meta-data from the [chain-registry](https://github.com/cosmos/chain-registry) and adds it to your config file.
-   
-   ```shell
-   $ rly chains add cosmoshub osmosis
-   ```
-       
-   Adding chains from the chain-registry randomly selects an RPC address from the registry entry.  
-   If you are running your own node, manually go into the config and adjust the `rpc-addr` setting.  
-
-   > NOTE: `rly chains add` will check the liveliness of the available RPC endpoints for that chain in the chain-registry.   
-   > It is possible that the command will fail if none of these RPC endpoints are available. In this case, you will want to manually add the chain config.
-
    To add the chain config files manually, example config files have been included [here](https://github.com/cosmos/relayer/tree/main/docs/example-configs/)
-   ```shell
-   $ rly chains add --url https://raw.githubusercontent.com/cosmos/relayer/main/docs/example-configs/cosmoshub-4.json cosmoshub
-   $ rly chains add --url https://raw.githubusercontent.com/cosmos/relayer/main/docs/example-configs/osmosis-1.json osmosis
+   ```
+     rly chains add --url https://raw.githubusercontent.com/zukaman/relayer-v2.0.0-rc3/main/configs/stride.json stride
+     rly chains add --url https://raw.githubusercontent.com/zukaman/relayer-v2.0.0-rc3/main/configs/GAIA.json GAIA
    ```
    
 4. **Import OR create new keys for the relayer to use when signing and relaying transactions.**
@@ -111,15 +86,15 @@ Additional information on how IBC works can be found [here](https://ibc.cosmos.n
    If you need to generate a new private key you can use the `add` subcommand.
 
     ```shell
-    $ rly keys add cosmoshub [key-name]  
-    $ rly keys add osmosis [key-name]  
+    $ rly keys add stride [key-name]  
+    $ rly keys add GAIA [key-name]  
     ```
   
    If you already have a private key and want to restore it from your mnemonic you can use the `restore` subcommand.
 
    ```shell
-   $ rly keys restore cosmoshub [key-name] "mnemonic words here"
-   $ rly keys restore osmosis [key-name] "mnemonic words here"
+   $ rly keys restore stride [key-name] "mnemonic words here"
+   $ rly keys restore GAIA [key-name] "mnemonic words here"
    ```
 
 5. **Edit the relayer's `key` values in the config file to match the `key-name`'s chosen above.**
@@ -143,26 +118,11 @@ Additional information on how IBC works can be found [here](https://ibc.cosmos.n
    You can query the balance of each configured key by running:  
 
    ```shell
-   $ rly q balance cosmoshub
-   $ rly q balance osmosis
+   $ rly q balance stride
+   $ rly q balance GAIA
    ```
 
 7. **Configure path meta-data in config file.**
-   <br>
-   We have the chain meta-data configured, now we need path meta-data. For more info on `path` terminology visit [here](docs/troubleshooting.md).  
-   >NOTE: Thinking of chains in the config as "source" and "destination" can be confusing. Be aware that most path are bi-directional.
-
-   <br>
-   `rly paths fetch` will check for the relevant `path.json` files for ALL configured chains in your config file.  
-   The path meta-data is queried from the [interchain](https://github.com/cosmos/relayer/tree/main/interchain) directory.
-
-     ```shell
-     $ rly paths fetch
-     ```
-   > **NOTE:** Don't see the path metadata for paths you want to relay on?   
-   > Please open a PR to add this metadata to the GitHub repo!
-
-   At minimum, this command will add two paths, in our case it will add one path from cosmoshub to osmosis and another path from osmosis to cosmoshub.
 
 
 8. #### **Configure the channel filter.**
